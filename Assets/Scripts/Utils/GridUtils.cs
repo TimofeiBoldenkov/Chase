@@ -2,12 +2,12 @@ using UnityEngine;
 
 public static class GridUtils
 {
-    public static Vector3Int CellPosFromWorldPos(Grid grid, Vector3 worldPos)
+    public static Vector3Int GridPosFromWorldPos(Grid grid, Vector3 worldPos)
     {   
         var cellPos = grid.WorldToCell(worldPos);
         return cellPos;
     }
-    public static Vector3Int CellPosFromScreenPos(Grid grid, Vector3 screenPos)
+    public static Vector3Int GridPosFromScreenPos(Grid grid, Vector3 screenPos)
     {
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(
             new Vector3(screenPos.x, screenPos.y, Camera.main.nearClipPlane)

@@ -18,17 +18,17 @@ public class MapRenderer : MonoBehaviour
     void Start()
     {
         var cells = Map.GetCells();
-        for (int x = 0; x < cells.GetLength(0); x++)
+        for (int y = 0; y < cells.GetLength(0); y++)
         {
-            for (int y = 0; y < cells.GetLength(1); y++)
+            for (int x = 0; x < cells.GetLength(1); x++)
             {
-                if (cells[x, y].Walkable)
+                if (cells[y, x].Walkable)
                 {
-                    tilemap.SetTile(new Vector3Int(x, cells.GetLength(1) - 1 - y, 0), RoadTile);
+                    tilemap.SetTile(new Vector3Int(x, y), RoadTile);
                 } 
                 else
                 {
-                    tilemap.SetTile(new Vector3Int(x, cells.GetLength(1) - 1 - y, 0), CragTile);
+                    tilemap.SetTile(new Vector3Int(x, y), CragTile);
                 }
             }
         }

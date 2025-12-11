@@ -1,23 +1,28 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
-public class MovementControllerScript : MonoBehaviour
+public class MovementController : MonoBehaviour
 {
-    public GameObject gridObject;
+    public GameObject GridObject;
     private Grid grid;
-    public GameObject heroObject;
     private Hero hero;
-    public GameObject moveTargetPrefab;
+    public GameObject MapObject;
+    private Map map;
+    public GameObject MoveTargetPrefab;
     private GameObject moveTargetObject;
+    public GameObject PathPointPrefab;
+    private List<GameObject> pathPointObjects;
     private InputAction moveAction;
 
     void Awake()
     {
-        hero = heroObject.GetComponent<Hero>();
-        grid = gridObject.GetComponent<Grid>();
+        grid = GridObject.GetComponent<Grid>();
+        map = MapObject.GetComponent<Map>();
         moveAction = InputSystem.actions.FindAction("Move");
-        moveTargetObject = Instantiate(moveTargetPrefab);
+        moveTargetObject = Instantiate(MoveTargetPrefab);
         moveTargetObject.SetActive(false);
+        pathPointObjects = new List<GameObject>();
     }
 
     void OnEnable()
@@ -42,23 +47,76 @@ public class MovementControllerScript : MonoBehaviour
 
     }
 
+    public void SetHero(GameObject newHeroObject)
+    {
+        hero = newHeroObject.GetComponent<Hero>();
+    }
+
+    private void ErasePath()
+    {
+        while (!(pathPointObjects.Count == 0))
+        {
+            pathPointObjects[^1].SetActive(false);
+            Destroy(pathPointObjects[^1]);
+            pathPointObjects.RemoveAt(pathPointObjects.Count - 1);
+        }
+
+        moveTargetObject.SetActive(false);
+    }
+
+    private void PaintPath(Vector3Int from, Vector3Int to)
+    {
+        var path = AStar.FindPath(map, VectorUtils.Vector3IntToVector2Int(from),
+            VectorUtils.Vector3IntToVector2Int(to));
+
+
+        if (path == null || path.Count == 0)
+        {
+            return;
+        }
+
+        ErasePath();
+
+        foreach (var step in path)
+        {
+            Vector3 worldPos = GridUtils.CellCenterWorldPosFromCellPos(grid,
+                    VectorUtils.Vector2IntToVector3Int(step));
+
+            if (step == path.Last.Value)
+            {
+                moveTargetObject.transform.position = worldPos;
+                moveTargetObject.SetActive(true);
+            }
+            else
+            {
+                var pathPoint = Instantiate(PathPointPrefab);
+                pathPoint.transform.position = worldPos;
+                pathPoint.SetActive(true);
+                pathPointObjects.Add(pathPoint);
+            }
+        }
+    }
+
     private void OnMove(InputAction.CallbackContext context)
     {
-        var cellPos = GridUtils.CellPosFromScreenPos(grid, Mouse.current.position.ReadValue());
-        var cellCenterWorldPos = GridUtils.CellCenterWorldPosFromCellPos(grid, cellPos);
-        if (!moveTargetObject.activeSelf)
+        if (hero == null)
         {
-            moveTargetObject.SetActive(true);
-            moveTargetObject.transform.position = cellCenterWorldPos;
+            return;
         }
-        else if (cellPos != GridUtils.CellPosFromWorldPos(grid, moveTargetObject.transform.position))
+
+        var mouseGridPos = GridUtils.GridPosFromScreenPos(grid, Mouse.current.position.ReadValue());
+        var heroGridPos = GridUtils.GridPosFromWorldPos(grid, hero.transform.position);
+        var targetGridPos = GridUtils.GridPosFromWorldPos(grid, moveTargetObject.transform.position);
+
+        if (!moveTargetObject.activeSelf ||
+            mouseGridPos != targetGridPos)
         {
-            moveTargetObject.transform.position = cellCenterWorldPos;
+            PaintPath(heroGridPos, mouseGridPos);
         }
         else
         {
-            moveTargetObject.SetActive(false);
-            hero.transform.position = cellCenterWorldPos;
+            ErasePath();
+            hero.transform.position = GridUtils.CellCenterWorldPosFromCellPos(grid, mouseGridPos);
         }
     }
 }
