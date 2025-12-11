@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2390971293246659799}
   - component: {fileID: 8566320461742637491}
   m_Layer: 9
-  m_Name: HeroSelectionIndicator
+  m_Name: Hero Selection Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -21,13 +21,14 @@ public class AStar
         return Math.Abs(pos2.x - pos1.x) * 10 + Math.Abs(pos2.y - pos1.y) * 10;
     }
 
-    static public LinkedList<Vector2Int> FindPath(Map map, Vector2Int from, Vector2Int to)
+    static public (List<Vector2Int> path, int availableSteps, int cost) 
+        FindPath(Map map, Vector2Int from, Vector2Int to, int movePoints)
     {
         if (from.x < 0 || from.x >= map.Columns || from.y < 0 || from.y >= map.Rows ||
             to.x < 0 || to.x >= map.Columns || to.y < 0 || to.y >= map.Rows ||
             to == from)
         {
-            return null;
+            return (null, 0, 0);
         }
 
         var isOpen = new bool[map.Rows, map.Columns];
@@ -77,14 +78,14 @@ public class AStar
             {
                 if (openList.Empty)
                 {
-                    return null;
+                    return (null, 0, 0);
                 }
                 current = openList.Pop().Position;
             } while (isClosed[current.y, current.x]);
         }
 
-        var path = new LinkedList<Vector2Int>();
-        path.AddLast(to);
+        var linkedListPath = new LinkedList<Vector2Int>();
+        linkedListPath.AddLast(to);
         var step = to;
         while (true)
         {
@@ -95,10 +96,24 @@ public class AStar
             }
             else
             {
-                path.AddFirst(step);
+                linkedListPath.AddFirst(step);
             }
         }
 
-        return path;
+        var path = new List<Vector2Int>(linkedListPath);
+
+        int availableSteps;
+        int cost = 0;
+        for (availableSteps = 0; availableSteps < path.Count; availableSteps++)
+        {
+            var pos = path[availableSteps];
+            if (g[pos.y, pos.x] > movePoints)
+            {
+                break;
+            }
+            cost = g[pos.y, pos.x];
+        }
+
+        return (path, availableSteps, cost);
     }
 }

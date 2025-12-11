@@ -6,19 +6,23 @@ public class MovementController : MonoBehaviour
 {
     public GameObject GridObject;
     private Grid grid;
-    private Hero hero;
     public GameObject MapObject;
     private Map map;
     public GameObject MoveTargetPrefab;
     private GameObject moveTargetObject;
     public GameObject PathPointPrefab;
+    public GameObject NextTurnsPathPointPrefab;
+    public GameObject HeroesControllerObject;
+    private HeroesController heroesController;
     private List<GameObject> pathPointObjects;
     private InputAction moveAction;
+    private int moveCost;
 
     void Awake()
     {
         grid = GridObject.GetComponent<Grid>();
         map = MapObject.GetComponent<Map>();
+        heroesController = HeroesControllerObject.GetComponent<HeroesController>();
         moveAction = InputSystem.actions.FindAction("Move");
         moveTargetObject = Instantiate(MoveTargetPrefab);
         moveTargetObject.SetActive(false);
@@ -47,11 +51,6 @@ public class MovementController : MonoBehaviour
 
     }
 
-    public void SetHero(GameObject newHeroObject)
-    {
-        hero = newHeroObject.GetComponent<Hero>();
-    }
-
     private void ErasePath()
     {
         while (!(pathPointObjects.Count == 0))
@@ -64,12 +63,8 @@ public class MovementController : MonoBehaviour
         moveTargetObject.SetActive(false);
     }
 
-    private void PaintPath(Vector3Int from, Vector3Int to)
+    private void PaintPath(List<Vector2Int> path, int availableSteps)
     {
-        var path = AStar.FindPath(map, VectorUtils.Vector3IntToVector2Int(from),
-            VectorUtils.Vector3IntToVector2Int(to));
-
-
         if (path == null || path.Count == 0)
         {
             return;
@@ -77,19 +72,26 @@ public class MovementController : MonoBehaviour
 
         ErasePath();
 
-        foreach (var step in path)
+        for (int i = 0; i < path.Count; i++)
         {
             Vector3 worldPos = GridUtils.CellCenterWorldPosFromCellPos(grid,
-                    VectorUtils.Vector2IntToVector3Int(step));
+                    VectorUtils.Vector2IntToVector3Int(path[i]));
 
-            if (step == path.Last.Value)
+            if (i == availableSteps - 1)
             {
                 moveTargetObject.transform.position = worldPos;
                 moveTargetObject.SetActive(true);
             }
-            else
+            else if (i < availableSteps)
             {
                 var pathPoint = Instantiate(PathPointPrefab);
+                pathPoint.transform.position = worldPos;
+                pathPoint.SetActive(true);
+                pathPointObjects.Add(pathPoint);
+            }
+            else
+            {
+                var pathPoint = Instantiate(NextTurnsPathPointPrefab);
                 pathPoint.transform.position = worldPos;
                 pathPoint.SetActive(true);
                 pathPointObjects.Add(pathPoint);
@@ -99,6 +101,7 @@ public class MovementController : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext context)
     {
+        var hero = heroesController.SelectedHero;
         if (hero == null)
         {
             return;
@@ -111,12 +114,18 @@ public class MovementController : MonoBehaviour
         if (!moveTargetObject.activeSelf ||
             mouseGridPos != targetGridPos)
         {
-            PaintPath(heroGridPos, mouseGridPos);
+            var (path, availableSteps, cost) = AStar.FindPath(map, VectorUtils.Vector3IntToVector2Int(heroGridPos),
+                VectorUtils.Vector3IntToVector2Int(mouseGridPos), hero.MovePoints);
+            Debug.Log(cost);
+            PaintPath(path, availableSteps);
+            moveCost = cost;
         }
         else
         {
             ErasePath();
-            hero.transform.position = GridUtils.CellCenterWorldPosFromCellPos(grid, mouseGridPos);
+            hero.transform.position = GridUtils.CellCenterWorldPosFromCellPos(grid, targetGridPos);
+            map.MoveHero(VectorUtils.Vector3IntToVector2Int(heroGridPos), VectorUtils.Vector3IntToVector2Int(targetGridPos));
+            hero.TakeMovePoints(moveCost);
         }
     }
 }

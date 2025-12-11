@@ -10,12 +10,20 @@ public class HeroesController : MonoBehaviour
     public GameObject ChasingHero3Object;
     public GameObject MovementControllerObject;
     private MovementController movementController;
+    public GameObject MapObject;
+    private Map map;
+    public GameObject GridObject;
+    private Grid grid;
+    public Hero SelectedHero { get => _selectedHero.GetComponent<Hero>(); }
+    private GameObject _selectedHero;
     private InputAction selectHeroAction;
 
     void Awake()
     {
         selectHeroAction = InputSystem.actions.FindAction("Select Hero");
         movementController = MovementControllerObject.GetComponent<MovementController>();
+        map = MapObject.GetComponent<Map>();
+        grid = GridObject.GetComponent<Grid>();
     }
 
     void OnEnable()
@@ -26,7 +34,14 @@ public class HeroesController : MonoBehaviour
 
     void Start()
     {
-
+        map.AddHero(VectorUtils.Vector3IntToVector2Int(
+            GridUtils.GridPosFromWorldPos(grid, ChasedHeroObject.transform.position)));
+        map.AddHero(VectorUtils.Vector3IntToVector2Int(
+            GridUtils.GridPosFromWorldPos(grid, ChasingHero1Object.transform.position)));
+        map.AddHero(VectorUtils.Vector3IntToVector2Int(
+            GridUtils.GridPosFromWorldPos(grid, ChasingHero2Object.transform.position)));
+        map.AddHero(VectorUtils.Vector3IntToVector2Int(
+            GridUtils.GridPosFromWorldPos(grid, ChasingHero3Object.transform.position)));
     }
 
     void OnDisable()
@@ -40,19 +55,20 @@ public class HeroesController : MonoBehaviour
         var keyControl = context.control as KeyControl;
         if (keyControl.keyCode == Key.Digit1)
         {
-            movementController.SetHero(ChasedHeroObject);
+            _selectedHero = ChasedHeroObject;
         }
         else if (keyControl.keyCode == Key.Digit2)
         {
-            movementController.SetHero(ChasingHero1Object);
+            _selectedHero = ChasingHero1Object;
         }
         else if (keyControl.keyCode == Key.Digit3)
         {
-            movementController.SetHero(ChasingHero2Object);
+            _selectedHero = ChasingHero2Object;
         }
         else if (keyControl.keyCode == Key.Digit4)
         {
-            movementController.SetHero(ChasingHero3Object);
+            _selectedHero = ChasingHero3Object;
         }
     }
+
 }

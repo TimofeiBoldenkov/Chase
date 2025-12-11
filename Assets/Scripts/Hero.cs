@@ -1,17 +1,16 @@
+using System;
 using UnityEngine;
 
 public class Hero : MonoBehaviour
 {
     public GameObject map;
-    private Grid grid;
+    public int MaxMovePoints;
+    public int MovePoints { get => _movePoints; }
+    private int _movePoints;
 
     void Awake()
     {
-        grid = map.GetComponent<Grid>();
-        if (!grid)
-        {
-            Debug.LogError("Grid component not found in map");
-        }
+        _movePoints = MaxMovePoints;
     }
 
     void Start()
@@ -22,5 +21,20 @@ public class Hero : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void TakeMovePoints(int movePoints)
+    {
+        if (_movePoints < movePoints)
+        {
+            throw new FormatException($"Unable to take {movePoints} movePoints: hero has only {_movePoints}");
+        }
+
+        _movePoints -= movePoints;
+    }
+
+    public void RestoreMovePoints()
+    {
+        _movePoints = MaxMovePoints;
     }
 }

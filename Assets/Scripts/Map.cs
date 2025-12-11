@@ -48,8 +48,8 @@ public class Map : MonoBehaviour
             {
                 cells[y, x] = mapRows[mapRows.Length - y - 1][x] switch
                 {
-                    'R' => new Cell(true, new Vector2Int(x, y)),
-                    'C' => new Cell(false, new Vector2Int(x, y)),
+                    'R' => new Cell(Cell.TerrainType.Road, new Vector2Int(x, y)),
+                    'M' => new Cell(Cell.TerrainType.Mountain, new Vector2Int(x, y)),
                     _ => throw new FormatException($"Unexpected symbol '{mapRows[mapRows.Length - y - 1][x]}' at ({x},{y})"),
                 };
             }
@@ -101,5 +101,25 @@ public class Map : MonoBehaviour
     public Cell GetCellFromPos(Vector2Int pos)
     {
         return cells[pos.y, pos.x];
+    }
+
+    public void AddHero(Vector2Int pos)
+    {
+        GetCellFromPos(pos).AddFlags(Cell.FlagsType.Hero);
+    }
+
+    public void RemoveHero(Vector2Int pos)
+    {
+        GetCellFromPos(pos).AddFlags(Cell.FlagsType.Hero);
+    }
+
+    public void MoveHero(Vector2Int from, Vector2Int to)
+    {
+        if (!GetCellFromPos(from).FlagsAreSet(Cell.FlagsType.Hero))
+        {
+            throw new FormatException($"Unable to move hero: there is no hero at ({from.x},{from.y})");
+        }
+        GetCellFromPos(from).RemoveFlags(Cell.FlagsType.Hero);
+        GetCellFromPos(to).AddFlags(Cell.FlagsType.Hero);
     }
 }
