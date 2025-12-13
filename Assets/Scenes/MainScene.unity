@@ -373,13 +373,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45ba439150dfa5a48b890f79645213d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  ChasedHeroObject: {fileID: 292413322}
-  ChasingHero1Object: {fileID: 1257101163}
-  ChasingHero2Object: {fileID: 1859897969}
-  ChasingHero3Object: {fileID: 194494998}
-  MovementControllerObject: {fileID: 1717905033}
   MapObject: {fileID: 546272056}
   GridObject: {fileID: 490765198}
+  TeamControllerObject: {fileID: 1824202893}
+  TurnControllerObject: {fileID: 612371049}
 --- !u!1 &490765198
 GameObject:
   m_ObjectHideFlags: 0
@@ -631,6 +628,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &612371049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 612371051}
+  - component: {fileID: 612371050}
+  m_Layer: 0
+  m_Name: TurnController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &612371050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612371049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af8661e6e74d52bd2ba87d38c4ea4bbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  TeamControllerObject: {fileID: 1824202893}
+--- !u!4 &612371051
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612371049}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.28248, y: 3.19601, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,6 +896,7 @@ MonoBehaviour:
   MoveTargetPrefab: {fileID: 8485207096663034275, guid: d843d104f6108f2b38172778c6dabf6d, type: 3}
   PathPointPrefab: {fileID: 1105625142981394083, guid: 0d6a1d25ee712df7ebe44bc624d1fdb2, type: 3}
   NextTurnsPathPointPrefab: {fileID: 7140502485213112, guid: fe8819a3eeb7be37d90b1c2bbe7bce6b, type: 3}
+  HeroesControllerObject: {fileID: 296355875}
 --- !u!4 &1717905035
 Transform:
   m_ObjectHideFlags: 0
@@ -864,6 +907,58 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 23.94773, y: -6.69017, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1824202893
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1824202895}
+  - component: {fileID: 1824202894}
+  m_Layer: 0
+  m_Name: TeamController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1824202894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824202893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1cb5a934e2739b18ad7fce649805796, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  ChasedTeamMembers:
+  - {fileID: 292413322}
+  ChasingTeamMembers:
+  - {fileID: 1257101163}
+  - {fileID: 1859897969}
+  - {fileID: 194494998}
+  MapObject: {fileID: 546272056}
+  GridObject: {fileID: 490765198}
+--- !u!4 &1824202895
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824202893}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.28248, y: 3.19601, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1163,3 +1258,5 @@ SceneRoots:
   - {fileID: 1717905035}
   - {fileID: 546272058}
   - {fileID: 296355876}
+  - {fileID: 612371051}
+  - {fileID: 1824202895}
