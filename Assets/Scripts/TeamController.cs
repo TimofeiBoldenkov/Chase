@@ -4,13 +4,13 @@ using UnityEngine;
 public class TeamController : MonoBehaviour
 {
     public List<GameObject> ChasedTeamMembers;
-    private List<Hero> chasedTeamMembersComponents { get => GetHeroComponentsFromObjects(ChasedTeamMembers); }
+    private List<Hero> ChasedTeamMembersComponents { get => GetHeroComponentsFromObjects(ChasedTeamMembers); }
     public List<GameObject> ChasingTeamMembers;
-    private List<Hero> chasingTeamMembersComponents { get => GetHeroComponentsFromObjects(ChasingTeamMembers); }
+    private List<Hero> ChasingTeamMembersComponents { get => GetHeroComponentsFromObjects(ChasingTeamMembers); }
     public GameObject MapObject;
-    private Map map;
+    private Map _map;
     public GameObject GridObject;
-    private Grid grid;
+    private Grid _grid;
 
     public enum Team
     {
@@ -20,21 +20,21 @@ public class TeamController : MonoBehaviour
 
     void Awake()
     {
-        map = MapObject.GetComponent<Map>();
-        grid = GridObject.GetComponent<Grid>();
+        _map = MapObject.GetComponent<Map>();
+        _grid = GridObject.GetComponent<Grid>();
     }
 
     void Start()
     {
         foreach (var hero in ChasedTeamMembers)
         {
-            map.AddHero(VectorUtils.Vector3IntToVector2Int(
-                PosUtils.WorldPosToGridPos(grid, hero.transform.position)));
+            _map.AddHero(VectorUtils.Vector3IntToVector2Int(
+                PosUtils.WorldPosToGridPos(_grid, hero.transform.position)));
         }
         foreach (var hero in ChasingTeamMembers)
         {
-            map.AddHero(VectorUtils.Vector3IntToVector2Int(
-                PosUtils.WorldPosToGridPos(grid, hero.transform.position)));
+            _map.AddHero(VectorUtils.Vector3IntToVector2Int(
+                PosUtils.WorldPosToGridPos(_grid, hero.transform.position)));
         }
     }
 
@@ -58,8 +58,8 @@ public class TeamController : MonoBehaviour
     {
         return team switch
         {
-            Team.ChasedTeam => chasedTeamMembersComponents,
-            Team.ChasingTeam => chasingTeamMembersComponents,
+            Team.ChasedTeam => ChasedTeamMembersComponents,
+            Team.ChasingTeam => ChasingTeamMembersComponents,
             _ => null
         };
     }

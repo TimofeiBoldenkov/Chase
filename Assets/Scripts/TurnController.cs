@@ -6,22 +6,22 @@ public class TurnController : MonoBehaviour
 {
     public GameObject TeamControllerObject;
     private TeamController teamController;
-    private int currentTeamIndex;
-    public TeamController.Team CurrentTeam { get => turnOrder[currentTeamIndex]; }
-    private readonly List<TeamController.Team> turnOrder =
+    private int _currentTeamIndex;
+    public TeamController.Team CurrentTeam { get => _turnOrder[_currentTeamIndex]; }
+    private readonly List<TeamController.Team> _turnOrder =
         new() { TeamController.Team.ChasedTeam, TeamController.Team.ChasingTeam };
-    private InputAction finishTurnAction;
+    private InputAction _finishTurnAction;
 
     void Awake()
     {
         teamController = TeamControllerObject.GetComponent<TeamController>();
-        finishTurnAction = InputSystem.actions.FindAction("Finish Turn");
+        _finishTurnAction = InputSystem.actions.FindAction("Finish Turn");
     }
 
     void OnEnable()
     {
-        finishTurnAction.Enable();
-        finishTurnAction.performed += OnFinishTurn;
+        _finishTurnAction.Enable();
+        _finishTurnAction.performed += OnFinishTurn;
     }
 
     void Start()
@@ -36,8 +36,8 @@ public class TurnController : MonoBehaviour
 
     void OnDisable()
     {
-        finishTurnAction.Disable();
-        finishTurnAction.performed -= OnFinishTurn;
+        _finishTurnAction.Disable();
+        _finishTurnAction.performed -= OnFinishTurn;
     }
 
     private void OnFinishTurn(InputAction.CallbackContext context)
@@ -46,7 +46,7 @@ public class TurnController : MonoBehaviour
         {
             hero.RestoreMovePoints();
         }
-        currentTeamIndex = (currentTeamIndex + 1) % turnOrder.Count;
-        Debug.Log($"Current team index: {currentTeamIndex}");
+        _currentTeamIndex = (_currentTeamIndex + 1) % _turnOrder.Count;
+        Debug.Log($"Current team index: {_currentTeamIndex}");
     }
 }

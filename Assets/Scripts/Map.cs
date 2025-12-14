@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 public class Map : MonoBehaviour
 {
-    private Cell[,] cells;
-    public int Rows => cells.GetLength(0);
-    public int Columns => cells.GetLength(1);
+    private Cell[,] _cells;
+    public int Rows => _cells.GetLength(0);
+    public int Columns => _cells.GetLength(1);
 
     private const string MAP_FILE_PATH = "Assets/Data/map.txt";
 
@@ -34,7 +34,7 @@ public class Map : MonoBehaviour
             throw new FormatException("Map should not be empty");
         }
 
-        cells = new Cell[mapRows.Length, mapRows[0].Length];
+        _cells = new Cell[mapRows.Length, mapRows[0].Length];
 
         int rowLength = mapRows[0].Length;
         for (int y = 0; y < mapRows.Length; y++)
@@ -46,7 +46,7 @@ public class Map : MonoBehaviour
 
             for (int x = 0; x < rowLength; x++)
             {
-                cells[y, x] = mapRows[mapRows.Length - y - 1][x] switch
+                _cells[y, x] = mapRows[mapRows.Length - y - 1][x] switch
                 {
                     'R' => new Cell(Cell.TerrainType.Road, new Vector2Int(x, y)),
                     'M' => new Cell(Cell.TerrainType.Mountain, new Vector2Int(x, y)),
@@ -58,7 +58,7 @@ public class Map : MonoBehaviour
 
     public Cell[,] GetCells()
     {
-        return cells;
+        return _cells;
     }
 
     public List<Vector2Int> GetWalkableNeighbourCells(Vector2Int position)
@@ -69,11 +69,11 @@ public class Map : MonoBehaviour
         {
             for (int x = position.x - 1; x <= position.x + 1; x++)
             {
-                if (y >= 0 && y < cells.GetLength(0) && 
-                    x >= 0 && x < cells.GetLength(1) && 
-                    cells[y, x].Walkable)
+                if (y >= 0 && y < _cells.GetLength(0) && 
+                    x >= 0 && x < _cells.GetLength(1) && 
+                    _cells[y, x].Walkable)
                 {
-                    NeighbourCells.Add(cells[y, x].Position);
+                    NeighbourCells.Add(_cells[y, x].Position);
                 }
             }
         }
@@ -100,7 +100,7 @@ public class Map : MonoBehaviour
 
     public Cell GetCellFromPos(Vector2Int pos)
     {
-        return cells[pos.y, pos.x];
+        return _cells[pos.y, pos.x];
     }
 
     public void AddHero(Vector2Int pos)

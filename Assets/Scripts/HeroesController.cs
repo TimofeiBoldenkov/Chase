@@ -6,30 +6,26 @@ using UnityEngine.InputSystem.Controls;
 public class HeroesController : MonoBehaviour
 {
     public GameObject MapObject;
-    private Map map;
     public GameObject GridObject;
-    private Grid grid;
     public GameObject TeamControllerObject;
-    private TeamController teamController;
+    private TeamController _teamController;
     public GameObject TurnControllerObject;
-    private TurnController turnController;
+    private TurnController _turnController;
     public Hero SelectedHero { get => _selectedHero; }
     private Hero _selectedHero;
-    private InputAction selectHeroAction;
+    private InputAction _selectHeroAction;
 
     void Awake()
     {
-        selectHeroAction = InputSystem.actions.FindAction("Select Hero");
-        map = MapObject.GetComponent<Map>();
-        grid = GridObject.GetComponent<Grid>();
-        teamController = TeamControllerObject.GetComponent<TeamController>();
-        turnController = TurnControllerObject.GetComponent<TurnController>();
+        _selectHeroAction = InputSystem.actions.FindAction("Select Hero");
+        _teamController = TeamControllerObject.GetComponent<TeamController>();
+        _turnController = TurnControllerObject.GetComponent<TurnController>();
     }
 
     void OnEnable()
     {
-        selectHeroAction.Enable();
-        selectHeroAction.performed += OnSelect;
+        _selectHeroAction.Enable();
+        _selectHeroAction.performed += OnSelect;
     }
 
     void Start()
@@ -39,13 +35,13 @@ public class HeroesController : MonoBehaviour
 
     void OnDisable()
     {
-        selectHeroAction.performed -= OnSelect;
-        selectHeroAction.Disable();
+        _selectHeroAction.performed -= OnSelect;
+        _selectHeroAction.Disable();
     }
 
     private void OnSelect(InputAction.CallbackContext context)
     {
-        var currentTeamHeroes = teamController.GetTeamMembers(turnController.CurrentTeam);
+        var currentTeamHeroes = _teamController.GetTeamMembers(_turnController.CurrentTeam);
 
         var keyControl = context.control as KeyControl;
         if (keyControl.keyCode == Key.Digit1)

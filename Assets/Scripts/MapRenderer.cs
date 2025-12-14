@@ -8,11 +8,11 @@ public class MapRenderer : MonoBehaviour
     public TileBase MountainTile;
     public TileBase RoadTile;
     public TileBase CityTile;
-    private Tilemap tilemap;
+    private Tilemap _tilemap;
 
     void Awake()
     {
-        tilemap = GetComponent<Tilemap>();
+        _tilemap = GetComponent<Tilemap>();
     }
 
     void Start()
@@ -24,11 +24,11 @@ public class MapRenderer : MonoBehaviour
             {
                 if (cells[y, x].Terrain == Cell.TerrainType.Road)
                 {
-                    tilemap.SetTile(new Vector3Int(x, y), RoadTile);
+                    _tilemap.SetTile(new Vector3Int(x, y), RoadTile);
                 } 
                 else if (cells[y, x].Terrain == Cell.TerrainType.Mountain)
                 {
-                    tilemap.SetTile(new Vector3Int(x, y), MountainTile);
+                    _tilemap.SetTile(new Vector3Int(x, y), MountainTile);
                 }
             }
         }

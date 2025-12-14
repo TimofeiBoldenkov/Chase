@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class Hero : MonoBehaviour
 {
-    public GameObject map;
     public int MaxMovePoints;
     public int MovePoints { get => _movePoints; }
     private int _movePoints;
