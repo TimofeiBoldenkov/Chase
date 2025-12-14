@@ -11,15 +11,18 @@ public class HeroesController : MonoBehaviour
     private TeamController _teamController;
     public GameObject TurnControllerObject;
     private TurnController _turnController;
+    public GameObject MovementControllerObject;
+    private MovementController _movementController;
     public Hero SelectedHero { get => _selectedHero; }
     private Hero _selectedHero;
     private InputAction _selectHeroAction;
 
     void Awake()
     {
-        _selectHeroAction = InputSystem.actions.FindAction("Select Hero");
         _teamController = TeamControllerObject.GetComponent<TeamController>();
         _turnController = TurnControllerObject.GetComponent<TurnController>();
+        _movementController = MovementControllerObject.GetComponent<MovementController>();
+        _selectHeroAction = InputSystem.actions.FindAction("Select Hero");
     }
 
     void OnEnable()
@@ -39,9 +42,16 @@ public class HeroesController : MonoBehaviour
         _selectHeroAction.Disable();
     }
 
+    public void ResetSelection()
+    {
+        _selectedHero = null;
+    }
+
     private void OnSelect(InputAction.CallbackContext context)
     {
         var currentTeamHeroes = _teamController.GetTeamMembers(_turnController.CurrentTeam);
+
+        _movementController.ErasePath();
 
         var keyControl = context.control as KeyControl;
         if (keyControl.keyCode == Key.Digit1)

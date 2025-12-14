@@ -51,7 +51,7 @@ public class MovementController : MonoBehaviour
 
     }
 
-    private void ErasePath()
+    public void ErasePath()
     {
         while (!(_pathPointObjects.Count == 0))
         {
@@ -116,7 +116,6 @@ public class MovementController : MonoBehaviour
         {
             var (path, availableSteps, cost) = AStar.FindPath(_map, VectorUtils.Vector3IntToVector2Int(heroGridPos),
                 VectorUtils.Vector3IntToVector2Int(mouseGridPos), hero.MovePoints);
-            Debug.Log(cost);
             PaintPath(path, availableSteps);
             _moveCost = cost;
         }
