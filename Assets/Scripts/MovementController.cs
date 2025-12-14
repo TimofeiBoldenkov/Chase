@@ -74,7 +74,7 @@ public class MovementController : MonoBehaviour
 
         for (int i = 0; i < path.Count; i++)
         {
-            Vector3 worldPos = GridUtils.CellCenterWorldPosFromCellPos(grid,
+            Vector3 worldPos = PosUtils.CellPosToCellCenterWorldPos(grid,
                     VectorUtils.Vector2IntToVector3Int(path[i]));
 
             if (i == availableSteps - 1)
@@ -107,9 +107,9 @@ public class MovementController : MonoBehaviour
             return;
         }
 
-        var mouseGridPos = GridUtils.GridPosFromScreenPos(grid, Mouse.current.position.ReadValue());
-        var heroGridPos = GridUtils.GridPosFromWorldPos(grid, hero.transform.position);
-        var targetGridPos = GridUtils.GridPosFromWorldPos(grid, moveTargetObject.transform.position);
+        var mouseGridPos = PosUtils.ScreenPosToGridPos(grid, Mouse.current.position.ReadValue());
+        var heroGridPos = PosUtils.WorldPosToGridPos(grid, hero.transform.position);
+        var targetGridPos = PosUtils.WorldPosToGridPos(grid, moveTargetObject.transform.position);
 
         if (!moveTargetObject.activeSelf ||
             mouseGridPos != targetGridPos)
@@ -123,7 +123,7 @@ public class MovementController : MonoBehaviour
         else
         {
             ErasePath();
-            hero.transform.position = GridUtils.CellCenterWorldPosFromCellPos(grid, targetGridPos);
+            hero.transform.position = PosUtils.CellPosToCellCenterWorldPos(grid, targetGridPos);
             map.MoveHero(VectorUtils.Vector3IntToVector2Int(heroGridPos), VectorUtils.Vector3IntToVector2Int(targetGridPos));
             hero.TakeMovePoints(moveCost);
         }

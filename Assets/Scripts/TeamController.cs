@@ -29,12 +29,12 @@ public class TeamController : MonoBehaviour
         foreach (var hero in ChasedTeamMembers)
         {
             map.AddHero(VectorUtils.Vector3IntToVector2Int(
-                GridUtils.GridPosFromWorldPos(grid, hero.transform.position)));
+                PosUtils.WorldPosToGridPos(grid, hero.transform.position)));
         }
         foreach (var hero in ChasingTeamMembers)
         {
             map.AddHero(VectorUtils.Vector3IntToVector2Int(
-                GridUtils.GridPosFromWorldPos(grid, hero.transform.position)));
+                PosUtils.WorldPosToGridPos(grid, hero.transform.position)));
         }
     }
 
