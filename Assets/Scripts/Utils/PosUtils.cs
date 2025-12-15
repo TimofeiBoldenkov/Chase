@@ -15,10 +15,10 @@ public static class PosUtils
         var cellPos = grid.WorldToCell(worldPos);
         return cellPos;
     }
-    public static Vector3 CellPosToCellCenterWorldPos(Grid grid, Vector3Int cellPos)
+    public static Vector3 GridPosToCellCenterWorldPos(Grid grid, Vector3Int gridPos)
     {
-        var cellWorldPos = grid.CellToWorld(cellPos);
+        var cellWorldPos = grid.CellToWorld(gridPos);
         var offset = grid.cellSize / 2;
         return cellWorldPos + offset;
-    }    
+    }
 }

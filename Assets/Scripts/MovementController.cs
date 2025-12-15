@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using System;
 
 public class MovementController : MonoBehaviour
 {
@@ -14,14 +15,18 @@ public class MovementController : MonoBehaviour
     public GameObject NextTurnsPathPointPrefab;
     public GameObject HeroesControllerObject;
     private HeroesController _heroesController;
+    public GameObject TurnControllerObject;
+    private TurnController _turnController;
     private List<GameObject> _pathPointObjects;
     private InputAction _moveAction;
     private int _moveCost;
+    public event Action OnMove;
 
     void Awake()
     {
         _grid = GridObject.GetComponent<Grid>();
         _map = MapObject.GetComponent<Map>();
+        _turnController = TurnControllerObject.GetComponent<TurnController>();
         _heroesController = HeroesControllerObject.GetComponent<HeroesController>();
         _moveAction = InputSystem.actions.FindAction("Move");
         _moveTargetObject = Instantiate(MoveTargetPrefab);
@@ -32,7 +37,9 @@ public class MovementController : MonoBehaviour
     void OnEnable()
     {
         _moveAction.Enable();
-        _moveAction.performed += OnMove;
+        _moveAction.performed += OnMoveInput;
+        _turnController.OnFinishTurn += OnFinishTurn;
+        _heroesController.OnSelect += OnSelectHero;
     }
 
     void Start()
@@ -42,8 +49,10 @@ public class MovementController : MonoBehaviour
 
     void OnDisable()
     {
-        _moveAction.performed -= OnMove;
+        _moveAction.performed -= OnMoveInput;
         _moveAction.Disable();
+        _turnController.OnFinishTurn -= OnFinishTurn;
+        _heroesController.OnSelect -= OnSelectHero;
     }
 
     void Update()
@@ -74,7 +83,7 @@ public class MovementController : MonoBehaviour
 
         for (int i = 0; i < path.Count; i++)
         {
-            Vector3 worldPos = PosUtils.CellPosToCellCenterWorldPos(_grid,
+            Vector3 worldPos = PosUtils.GridPosToCellCenterWorldPos(_grid,
                     VectorUtils.Vector2IntToVector3Int(path[i]));
 
             if (i == availableSteps - 1)
@@ -99,7 +108,7 @@ public class MovementController : MonoBehaviour
         }
     }
 
-    private void OnMove(InputAction.CallbackContext context)
+    private void OnMoveInput(InputAction.CallbackContext context)
     {
         var hero = _heroesController.SelectedHero;
         if (hero == null)
@@ -108,13 +117,12 @@ public class MovementController : MonoBehaviour
         }
 
         var mouseGridPos = PosUtils.ScreenPosToGridPos(_grid, Mouse.current.position.ReadValue());
-        var heroGridPos = PosUtils.WorldPosToGridPos(_grid, hero.transform.position);
+        var heroMapPos = hero.MapPos;
         var targetGridPos = PosUtils.WorldPosToGridPos(_grid, _moveTargetObject.transform.position);
 
-        if (!_moveTargetObject.activeSelf ||
-            mouseGridPos != targetGridPos)
+        if (!_moveTargetObject.activeSelf || mouseGridPos != targetGridPos)
         {
-            var (path, availableSteps, cost) = AStar.FindPath(_map, VectorUtils.Vector3IntToVector2Int(heroGridPos),
+            var (path, availableSteps, cost) = AStar.FindPath(_map, heroMapPos,
                 VectorUtils.Vector3IntToVector2Int(mouseGridPos), hero.MovePoints);
             PaintPath(path, availableSteps);
             _moveCost = cost;
@@ -122,9 +130,20 @@ public class MovementController : MonoBehaviour
         else
         {
             ErasePath();
-            hero.transform.position = PosUtils.CellPosToCellCenterWorldPos(_grid, targetGridPos);
-            _map.MoveHero(VectorUtils.Vector3IntToVector2Int(heroGridPos), VectorUtils.Vector3IntToVector2Int(targetGridPos));
+            hero.MoveTo(VectorUtils.Vector3IntToVector2Int(targetGridPos));
             hero.TakeMovePoints(_moveCost);
         }
+
+        OnMove.Invoke();
+    }
+
+    private void OnFinishTurn()
+    {
+        ErasePath();
+    }
+
+    private void OnSelectHero()
+    {
+        ErasePath();
     }
 }

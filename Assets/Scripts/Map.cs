@@ -9,21 +9,11 @@ public class Map : MonoBehaviour
     public int Rows => _cells.GetLength(0);
     public int Columns => _cells.GetLength(1);
 
-    private const string MAP_FILE_PATH = "Assets/Data/map.txt";
+    private const string MAP_FILE_PATH = "Assets/Data/big_map.txt";
 
     void Awake()
     {
         ReadMapFromTXT();
-    }
-
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-
     }
 
     void ReadMapFromTXT()

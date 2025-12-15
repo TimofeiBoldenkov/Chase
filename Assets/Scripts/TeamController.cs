@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +8,13 @@ public class TeamController : MonoBehaviour
     private List<Hero> ChasedTeamMembersComponents { get => GetHeroComponentsFromObjects(ChasedTeamMembers); }
     public List<GameObject> ChasingTeamMembers;
     private List<Hero> ChasingTeamMembersComponents { get => GetHeroComponentsFromObjects(ChasingTeamMembers); }
-    public GameObject MapObject;
-    private Map _map;
     public GameObject GridObject;
-    private Grid _grid;
+
+    public Dictionary<Team, float> InformationAccuracy = new Dictionary<Team, float>
+    {
+        {Team.ChasedTeam, 10},
+        {Team.ChasingTeam, 0.5f}
+    };
 
     public enum Team
     {
@@ -20,22 +24,7 @@ public class TeamController : MonoBehaviour
 
     void Awake()
     {
-        _map = MapObject.GetComponent<Map>();
-        _grid = GridObject.GetComponent<Grid>();
-    }
-
-    void Start()
-    {
-        foreach (var hero in ChasedTeamMembers)
-        {
-            _map.AddHero(VectorUtils.Vector3IntToVector2Int(
-                PosUtils.WorldPosToGridPos(_grid, hero.transform.position)));
-        }
-        foreach (var hero in ChasingTeamMembers)
-        {
-            _map.AddHero(VectorUtils.Vector3IntToVector2Int(
-                PosUtils.WorldPosToGridPos(_grid, hero.transform.position)));
-        }
+        
     }
 
     void Update()

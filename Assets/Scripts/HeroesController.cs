@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,25 +11,23 @@ public class HeroesController : MonoBehaviour
     public GameObject TeamControllerObject;
     private TeamController _teamController;
     public GameObject TurnControllerObject;
-    private TurnController _turnController;
-    public GameObject MovementControllerObject;
-    private MovementController _movementController;
-    public Hero SelectedHero { get => _selectedHero; }
+    private TurnController _turnController;    public Hero SelectedHero { get => _selectedHero; }
     private Hero _selectedHero;
     private InputAction _selectHeroAction;
+    public event Action OnSelect;
 
     void Awake()
     {
         _teamController = TeamControllerObject.GetComponent<TeamController>();
         _turnController = TurnControllerObject.GetComponent<TurnController>();
-        _movementController = MovementControllerObject.GetComponent<MovementController>();
         _selectHeroAction = InputSystem.actions.FindAction("Select Hero");
     }
 
     void OnEnable()
     {
         _selectHeroAction.Enable();
-        _selectHeroAction.performed += OnSelect;
+        _selectHeroAction.performed += OnSelectInput;
+        _turnController.OnFinishTurn += OnFinishTurn;
     }
 
     void Start()
@@ -38,20 +37,14 @@ public class HeroesController : MonoBehaviour
 
     void OnDisable()
     {
-        _selectHeroAction.performed -= OnSelect;
+        _selectHeroAction.performed -= OnSelectInput;
         _selectHeroAction.Disable();
+        _turnController.OnFinishTurn -= OnFinishTurn;
     }
 
-    public void ResetSelection()
-    {
-        _selectedHero = null;
-    }
-
-    private void OnSelect(InputAction.CallbackContext context)
+    private void OnSelectInput(InputAction.CallbackContext context)
     {
         var currentTeamHeroes = _teamController.GetTeamMembers(_turnController.CurrentTeam);
-
-        _movementController.ErasePath();
 
         var keyControl = context.control as KeyControl;
         if (keyControl.keyCode == Key.Digit1)
@@ -70,5 +63,12 @@ public class HeroesController : MonoBehaviour
         {
             _selectedHero = currentTeamHeroes.Count >= 4 ? currentTeamHeroes[3] : null;
         }
+
+        OnSelect?.Invoke();
+    }
+
+    public void OnFinishTurn()
+    {
+        _selectedHero = null;
     }
 }
