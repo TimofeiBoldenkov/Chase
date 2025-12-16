@@ -8,6 +8,7 @@ public class Cell
     {
         Road,
         Mountain,
+        Destination,
     }
 
     [Flags]
@@ -22,6 +23,21 @@ public class Cell
     public TerrainType Terrain { get; set; }
     public FlagsType Flags { get; set; }
     public Vector2Int Position { get; set; }
+    public Hero Hero
+    {
+        get
+        {
+            if (FlagsAreSet(FlagsType.Hero))
+            {
+                return _hero;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+    private Hero _hero;
 
     public Cell(TerrainType terrain, Vector2Int position) { Terrain = terrain; Position = position; }
 
@@ -29,16 +45,17 @@ public class Cell
     {
         get
         {
-            if (Terrain == TerrainType.Road)
+            if (Terrain == TerrainType.Road || Terrain == TerrainType.Destination)
             {
                 if (FlagsAreSet(FlagsType.Hero))
                 {
                     return false;
-                } else
+                }
+                else
                 {
                     return true;
                 }
-            } 
+            }
             else
             {
                 return false;
@@ -51,10 +68,24 @@ public class Cell
         Flags |= flags;
     }
 
-
     public void RemoveFlags(FlagsType flags)
     {
         Flags &= ~flags;
+    }
+
+    public void AddHero(Hero hero)
+    {
+        AddFlags(FlagsType.Hero);
+        _hero = hero;
+    }
+
+    public void RemoveHero()
+    {
+        if (Hero != null)
+        {
+            _hero = null;
+            RemoveFlags(FlagsType.Hero);
+        }
     }
 
     public bool FlagsAreSet(FlagsType flags)

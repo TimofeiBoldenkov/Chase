@@ -122,7 +122,7 @@ public class MovementController : MonoBehaviour
 
         if (!_moveTargetObject.activeSelf || mouseGridPos != targetGridPos)
         {
-            var (path, availableSteps, cost) = AStar.FindPath(_map, heroMapPos,
+            var (path, availableSteps, cost, killTarget) = AStar.FindPath(_map, heroMapPos,
                 VectorUtils.Vector3IntToVector2Int(mouseGridPos), hero.MovePoints);
             PaintPath(path, availableSteps);
             _moveCost = cost;

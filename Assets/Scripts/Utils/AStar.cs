@@ -21,14 +21,21 @@ public class AStar
         return Math.Abs(pos2.x - pos1.x) * 10 + Math.Abs(pos2.y - pos1.y) * 10;
     }
 
-    static public (List<Vector2Int> path, int availableSteps, int cost) 
+    static public (List<Vector2Int> path, int availableSteps, int cost, bool killTarget) 
         FindPath(Map map, Vector2Int from, Vector2Int to, int movePoints)
     {
+        if (!map.GetCellFromPos(to).Walkable && map.GetCellFromPos(to).Hero == null)
+        {
+            return (null, 0, 0, false);
+        }
+
+        bool killTarget = false;
+
         if (from.x < 0 || from.x >= map.Columns || from.y < 0 || from.y >= map.Rows ||
             to.x < 0 || to.x >= map.Columns || to.y < 0 || to.y >= map.Rows ||
             to == from)
         {
-            return (null, 0, 0);
+            return (null, 0, 0, killTarget);
         }
 
         var isOpen = new bool[map.Rows, map.Columns];
@@ -43,9 +50,14 @@ public class AStar
         {
             isClosed[current.y, current.x] = true;
 
-            foreach (var neighbour in map.GetWalkableNeighbourCells(current))
+            foreach (var neighbour in map.GetNeighbourCells(current))
             {
-                if (!isClosed[neighbour.y, neighbour.x])
+                if (neighbour == to && map.GetCellFromPos(neighbour).Hero != null)
+                {
+                    killTarget = true;
+                }
+                if ((map.GetCellFromPos(neighbour).Walkable || (neighbour == to && killTarget == true)) 
+                    && !isClosed[neighbour.y, neighbour.x])
                 {
                     int? distance = map.DistanceBetweenNeighbourCells(current, neighbour);
                     if (!distance.HasValue)
@@ -78,7 +90,7 @@ public class AStar
             {
                 if (openList.Empty)
                 {
-                    return (null, 0, 0);
+                    return (null, 0, 0, killTarget);
                 }
                 current = openList.Pop().Position;
             } while (isClosed[current.y, current.x]);
@@ -114,6 +126,6 @@ public class AStar
             cost = g[pos.y, pos.x];
         }
 
-        return (path, availableSteps, cost);
+        return (path, availableSteps, cost, killTarget);
     }
 }

@@ -7,7 +7,7 @@ public class MapRenderer : MonoBehaviour
     public Map Map;
     public TileBase MountainTile;
     public TileBase RoadTile;
-    public TileBase CityTile;
+    public TileBase DestinationTile;
     private Tilemap _tilemap;
 
     void Awake()
@@ -29,6 +29,10 @@ public class MapRenderer : MonoBehaviour
                 else if (cells[y, x].Terrain == Cell.TerrainType.Mountain)
                 {
                     _tilemap.SetTile(new Vector3Int(x, y), MountainTile);
+                }
+                else if (cells[y, x].Terrain == Cell.TerrainType.Destination)
+                {
+                    _tilemap.SetTile(new Vector3Int(x, y), DestinationTile);
                 }
             }
         }

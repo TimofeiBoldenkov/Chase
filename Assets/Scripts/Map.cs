@@ -9,7 +9,7 @@ public class Map : MonoBehaviour
     public int Rows => _cells.GetLength(0);
     public int Columns => _cells.GetLength(1);
 
-    private const string MAP_FILE_PATH = "Assets/Data/big_map.txt";
+    private const string MAP_FILE_PATH = "Assets/Data/map3.txt";
 
     void Awake()
     {
@@ -40,6 +40,7 @@ public class Map : MonoBehaviour
                 {
                     'R' => new Cell(Cell.TerrainType.Road, new Vector2Int(x, y)),
                     'M' => new Cell(Cell.TerrainType.Mountain, new Vector2Int(x, y)),
+                    'D' => new Cell(Cell.TerrainType.Destination, new Vector2Int(x, y)),
                     _ => throw new FormatException($"Unexpected symbol '{mapRows[mapRows.Length - y - 1][x]}' at ({x},{y})"),
                 };
             }
@@ -51,7 +52,7 @@ public class Map : MonoBehaviour
         return _cells;
     }
 
-    public List<Vector2Int> GetWalkableNeighbourCells(Vector2Int position)
+    public List<Vector2Int> GetNeighbourCells(Vector2Int position)
     {
         var NeighbourCells = new List<Vector2Int>();
 
@@ -60,8 +61,7 @@ public class Map : MonoBehaviour
             for (int x = position.x - 1; x <= position.x + 1; x++)
             {
                 if (y >= 0 && y < _cells.GetLength(0) && 
-                    x >= 0 && x < _cells.GetLength(1) && 
-                    _cells[y, x].Walkable)
+                    x >= 0 && x < _cells.GetLength(1))
                 {
                     NeighbourCells.Add(_cells[y, x].Position);
                 }
@@ -93,23 +93,24 @@ public class Map : MonoBehaviour
         return _cells[pos.y, pos.x];
     }
 
-    public void AddHero(Vector2Int pos)
+    public void AddHero(Hero hero)
     {
-        GetCellFromPos(pos).AddFlags(Cell.FlagsType.Hero);
+        GetCellFromPos(hero.MapPos).AddHero(hero);
     }
 
-    public void RemoveHero(Vector2Int pos)
+    public void RemoveHero(Hero hero)
     {
-        GetCellFromPos(pos).AddFlags(Cell.FlagsType.Hero);
+        GetCellFromPos(hero.MapPos).RemoveHero();
     }
 
     public void MoveHero(Vector2Int from, Vector2Int to)
     {
-        if (!GetCellFromPos(from).FlagsAreSet(Cell.FlagsType.Hero))
+        if (GetCellFromPos(from).Hero == null)
         {
             throw new FormatException($"Unable to move hero: there is no hero at ({from.x},{from.y})");
         }
-        GetCellFromPos(from).RemoveFlags(Cell.FlagsType.Hero);
-        GetCellFromPos(to).AddFlags(Cell.FlagsType.Hero);
+        Hero hero = GetCellFromPos(from).Hero;
+        GetCellFromPos(from).RemoveHero();
+        GetCellFromPos(to).AddHero(hero);
     }
 }

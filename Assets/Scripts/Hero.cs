@@ -7,26 +7,31 @@ public class Hero : MonoBehaviour
     private Grid _grid;
     public GameObject MapObject;
     private Map _map;
+    public GameObject TeamControllerObject;
+    private TeamController _teamController;
     public int MaxMovePoints;
     public int MovePoints { get => _movePoints; }
     private int _movePoints;
     public Vector2Int MapPos => VectorUtils.Vector3IntToVector2Int(PosUtils.WorldPosToGridPos(_grid, transform.position));
+    public bool Alive { get => _alive; }
+    private bool _alive = true;
 
     void Awake()
     {
         _grid = GridObject.GetComponent<Grid>();
         _map = MapObject.GetComponent<Map>();
+        _teamController = TeamControllerObject.GetComponent<TeamController>();
         _movePoints = MaxMovePoints;
     }
 
     void Start()
     {
-        _map.AddHero(MapPos);
+        _map.AddHero(this);
     }
 
     void Update()
     {
-        
+
     }
 
     public void TakeMovePoints(int movePoints)
@@ -46,8 +51,27 @@ public class Hero : MonoBehaviour
 
     public void MoveTo(Vector2Int mapPos)
     {
-        _map.MoveHero(MapPos, mapPos);
-        transform.position = PosUtils.GridPosToCellCenterWorldPos(_grid, VectorUtils.Vector2IntToVector3Int(mapPos));
+        var targetHero = _map.GetCellFromPos(mapPos).Hero;
+        if (targetHero != null)
+        {
+            var winner = _teamController.GetBattleWinner(this, targetHero);
+            if (winner == this)
+            {
+                Debug.Log("Kill");
+                targetHero.Kill();
+                _map.MoveHero(MapPos, mapPos);
+                transform.position = PosUtils.GridPosToCellCenterWorldPos(_grid, VectorUtils.Vector2IntToVector3Int(mapPos));
+            }
+            else
+            {
+                Kill();
+            }
+        }
+        else
+        {
+            _map.MoveHero(MapPos, mapPos);
+            transform.position = PosUtils.GridPosToCellCenterWorldPos(_grid, VectorUtils.Vector2IntToVector3Int(mapPos));
+        }
     }
 
     public void MakeVisible()
@@ -58,5 +82,12 @@ public class Hero : MonoBehaviour
     public void MakeInvisible()
     {
         GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    public void Kill()
+    {
+        _alive = false;
+        _map.RemoveHero(this);
+        MakeInvisible();
     }
 }

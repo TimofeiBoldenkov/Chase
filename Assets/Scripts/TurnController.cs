@@ -7,6 +7,8 @@ public class TurnController : MonoBehaviour
 {
     public GameObject TeamControllerObject;
     private TeamController _teamController;
+    public GameObject FullScreenMessageObject;
+    private FullScreenMessage _fullScreenMessage;
     public GameObject HeroesControllerObject;
     public GameObject MovementControllerObject;
     private int _currentTeamIndex;
@@ -19,6 +21,7 @@ public class TurnController : MonoBehaviour
     void Awake()
     {
         _teamController = TeamControllerObject.GetComponent<TeamController>();
+        _fullScreenMessage = FullScreenMessageObject.GetComponent<FullScreenMessage>();
         _finishTurnAction = InputSystem.actions.FindAction("Finish Turn");
     }
 
@@ -52,6 +55,7 @@ public class TurnController : MonoBehaviour
         }
         _currentTeamIndex = (_currentTeamIndex + 1) % _turnOrder.Count;
         OnFinishTurn?.Invoke();
+        _fullScreenMessage.Show("New turn started.", true);
     }
 
     public List<TeamController.Team> GetEnemyTeams()
